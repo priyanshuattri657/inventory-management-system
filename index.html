@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StockPoint — Inventory Management System</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">SP</div>
+    <div class="brand-text">
+      <span class="brand-name">StockPoint</span>
+      <span class="brand-sub">Inventory Control</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav" id="sidebarNav">
+    <button class="nav-item active" data-view="dashboard">
+      <svg viewBox="0 0 24 24" class="nav-icon"><path d="M4 13h6V4H4v9zm0 7h6v-5H4v5zm10 0h6V11h-6v9zm0-16v5h6V4h-6z"/></svg>
+      <span>Dashboard</span>
+    </button>
+    <button class="nav-item" data-view="items">
+      <svg viewBox="0 0 24 24" class="nav-icon"><path d="M20 2H4c-1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1.1-1-2-2-2zm-1 18H5V9h14v11zm1-13H4V4h16v3z"/></svg>
+      <span>Inventory Items</span>
+    </button>
+    <button class="nav-item" data-view="stockin">
+      <svg viewBox="0 0 24 24" class="nav-icon"><path d="M20 6h-4l-2-2h-4L8 6H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-8 12-4-4h2.5V9h3v5H16z"/></svg>
+      <span>Stock In</span>
+    </button>
+    <button class="nav-item" data-view="stockout">
+      <svg viewBox="0 0 24 24" class="nav-icon"><path d="M20 6h-4l-2-2h-4L8 6H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2zm-8 4 4 4h-2.5v5h-3v-5H8z"/></svg>
+      <span>Stock Out</span>
+    </button>
+    <button class="nav-item" data-view="movements">
+      <svg viewBox="0 0 24 24" class="nav-icon"><path d="M9 3v2H4v2h1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7h1V5h-5V3H9zm2 6h2v9h-2V9zM7 9h2v9H7V9zm8 0h2v9h-2V9z"/></svg>
+      <span>Stock Movements</span>
+    </button>
+    <button class="nav-item" data-view="reports">
+      <svg viewBox="0 0 24 24" class="nav-icon"><path d="M5 3h14a1 1 0 0 1 1 1v16l-4-3-3 3-3-3-3 3-3-3-1 .8V4a1 1 0 0 1 1-1zm2 5h10V6H7v2zm0 4h10v-2H7v2zm0 4h6v-2H7v2z"/></svg>
+      <span>Reports</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="footer-note">Prototype build</div>
+    <div class="footer-sub">Ready for REST API integration</div>
+  </div>
+</aside>
+<div class="sidebar-scrim" id="sidebarScrim"></div>
+
+<!-- ===================== MAIN ===================== -->
+<div class="main">
+
+  <header class="topbar">
+    <button class="icon-btn menu-toggle" id="menuToggle" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+    </button>
+
+    <div class="topbar-search">
+      <svg viewBox="0 0 24 24" class="search-icon"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+      <input type="text" id="globalSearch" placeholder="Search items by name or SKU…">
+    </div>
+
+    <div class="topbar-right">
+      <button class="icon-btn" id="notifBtn" title="Low stock alerts">
+        <svg viewBox="0 0 24 24"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6v-5a6 6 0 0 0-5-5.91V4a1 1 0 0 0-2 0v1.09A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+        <span class="notif-dot" id="notifDot" hidden></span>
+      </button>
+      <div class="topbar-user">
+        <div class="user-avatar">AD</div>
+        <div class="user-meta">
+          <span class="user-name">Admin</span>
+          <span class="user-role">Store Manager</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content" id="content">
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <section class="view active" id="view-dashboard">
+      <div class="view-head">
+        <div>
+          <h1>Dashboard</h1>
+          <p class="view-sub">Live overview of stock levels and inventory activity</p>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="statGrid"></div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><h2>Stock by category</h2></div>
+          <canvas id="chartCategory" height="220"></canvas>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Stock in / out — last 7 days</h2></div>
+          <canvas id="chartActivity" height="220"></canvas>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head"><h2>Low stock alerts</h2></div>
+          <div id="lowStockList" class="mini-list"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Recent movements</h2></div>
+          <div id="recentMovementsList" class="mini-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- ITEMS ---------- -->
+    <section class="view" id="view-items">
+      <div class="view-head">
+        <div>
+          <h1>Inventory Items</h1>
+          <p class="view-sub">Manage the master list of stock items</p>
+        </div>
+        <button class="btn btn-primary" id="btnAddItem">
+          <svg viewBox="0 0 24 24" class="btn-icon"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>
+          Add Item
+        </button>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar-search">
+          <svg viewBox="0 0 24 24" class="search-icon"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+          <input type="text" id="itemSearch" placeholder="Search by name, SKU or Item ID">
+        </div>
+        <select id="itemCategoryFilter" class="select"></select>
+        <select id="itemStockFilter" class="select">
+          <option value="">All stock levels</option>
+          <option value="low">Low stock</option>
+          <option value="ok">Healthy stock</option>
+          <option value="out">Out of stock</option>
+        </select>
+        <select id="itemSort" class="select">
+          <option value="">Sort by</option>
+          <option value="name">Name (A–Z)</option>
+          <option value="qty">Quantity (low to high)</option>
+          <option value="value">Stock value (high to low)</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table" id="itemsTable">
+          <thead>
+            <tr>
+              <th>Item ID</th><th>Name</th><th>SKU</th><th>Category</th><th>Unit</th>
+              <th>Quantity</th><th>Reorder Level</th><th>Unit Price</th><th>Stock Value</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="itemsTableBody"></tbody>
+        </table>
+        <div class="empty-state" id="itemsEmpty" hidden>
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+          <p>No items found</p>
+          <span>Try adjusting your search or filters</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- STOCK IN ---------- -->
+    <section class="view" id="view-stockin">
+      <div class="view-head">
+        <div>
+          <h1>Stock In</h1>
+          <p class="view-sub">Record newly received stock for an item</p>
+        </div>
+      </div>
+
+      <div class="panel form-panel">
+        <form id="stockInForm" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="inItem">Item</label>
+              <select id="inItem" required></select>
+              <span class="field-error" data-for="inItem"></span>
+            </div>
+            <div class="field">
+              <label for="inQty">Quantity received</label>
+              <input type="number" id="inQty" min="1">
+              <span class="field-error" data-for="inQty"></span>
+            </div>
+            <div class="field">
+              <label for="inDate">Date</label>
+              <input type="date" id="inDate" required>
+              <span class="field-error" data-for="inDate"></span>
+            </div>
+            <div class="field">
+              <label for="inSupplier">Supplier (optional)</label>
+              <input type="text" id="inSupplier" placeholder="e.g. Om Traders">
+            </div>
+            <div class="field field-wide">
+              <label for="inNote">Note (optional)</label>
+              <input type="text" id="inNote" placeholder="e.g. Purchase order #1042">
+            </div>
+          </div>
+
+          <div class="availability-box" id="stockInPreview" hidden></div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Add Stock</button>
+            <button type="reset" class="btn btn-ghost">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Recent stock-in entries</h2></div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Txn ID</th><th>Item</th><th>Quantity</th><th>Date</th><th>Supplier</th></tr></thead>
+            <tbody id="stockInPreviewBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- STOCK OUT ---------- -->
+    <section class="view" id="view-stockout">
+      <div class="view-head">
+        <div>
+          <h1>Stock Out</h1>
+          <p class="view-sub">Record stock leaving inventory (sales, usage, damage, etc.)</p>
+        </div>
+      </div>
+
+      <div class="panel form-panel">
+        <form id="stockOutForm" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="outItem">Item</label>
+              <select id="outItem" required></select>
+              <span class="field-error" data-for="outItem"></span>
+            </div>
+            <div class="field">
+              <label for="outQty">Quantity</label>
+              <input type="number" id="outQty" min="1">
+              <span class="field-error" data-for="outQty"></span>
+            </div>
+            <div class="field">
+              <label for="outDate">Date</label>
+              <input type="date" id="outDate" required>
+              <span class="field-error" data-for="outDate"></span>
+            </div>
+            <div class="field">
+              <label for="outReason">Reason</label>
+              <select id="outReason">
+                <option value="Sale">Sale</option>
+                <option value="Internal use">Internal use</option>
+                <option value="Damaged">Damaged / Expired</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="availability-box" id="stockOutPreview" hidden></div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Remove Stock</button>
+            <button type="reset" class="btn btn-ghost">Clear</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Recent stock-out entries</h2></div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Txn ID</th><th>Item</th><th>Quantity</th><th>Date</th><th>Reason</th></tr></thead>
+            <tbody id="stockOutPreviewBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- MOVEMENTS ---------- -->
+    <section class="view" id="view-movements">
+      <div class="view-head">
+        <div>
+          <h1>Stock Movements</h1>
+          <p class="view-sub">Full history of stock in and stock out transactions</p>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar-search">
+          <svg viewBox="0 0 24 24" class="search-icon"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"/></svg>
+          <input type="text" id="movSearch" placeholder="Search by item or Txn ID">
+        </div>
+        <select id="movTypeFilter" class="select">
+          <option value="">All types</option>
+          <option value="In">Stock In</option>
+          <option value="Out">Stock Out</option>
+        </select>
+        <select id="movDateFilter" class="select">
+          <option value="">All dates</option>
+          <option value="today">Today</option>
+          <option value="week">This week</option>
+          <option value="month">This month</option>
+        </select>
+        <select id="movSort" class="select">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead><tr><th>Txn ID</th><th>Item</th><th>Type</th><th>Quantity</th><th>Date</th><th>Detail</th></tr></thead>
+          <tbody id="movTableBody"></tbody>
+        </table>
+        <div class="empty-state" id="movEmpty" hidden>
+          <svg viewBox="0 0 24 24"><path d="M9 3v2H4v2h1v13a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7h1V5h-5V3H9z"/></svg>
+          <p>No movements found</p>
+          <span>Try adjusting your search or filters</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- REPORTS ---------- -->
+    <section class="view" id="view-reports">
+      <div class="view-head">
+        <div>
+          <h1>Reports</h1>
+          <p class="view-sub">Generate and export inventory performance reports</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="toolbar">
+          <select id="reportType" class="select">
+            <option value="all-items">All items</option>
+            <option value="low-stock">Low stock items</option>
+            <option value="out-of-stock">Out of stock items</option>
+            <option value="stock-value">Stock value by item</option>
+            <option value="category">Stock by category</option>
+            <option value="movement-history">Stock movement history</option>
+            <option value="stock-in">Stock-in history</option>
+            <option value="stock-out">Stock-out history</option>
+          </select>
+          <select id="reportDateFilter" class="select">
+            <option value="all">All time</option>
+            <option value="today">Today</option>
+            <option value="week">This week</option>
+            <option value="month">This month</option>
+            <option value="custom">Custom range</option>
+          </select>
+          <input type="date" id="reportFrom" class="select" hidden>
+          <input type="date" id="reportTo" class="select" hidden>
+          <button class="btn btn-primary" id="btnGenerateReport">Generate Report</button>
+          <button class="btn btn-ghost" id="btnPrintReport">Print</button>
+          <button class="btn btn-ghost" id="btnExportReport">Export CSV</button>
+        </div>
+
+        <div id="reportSummary" class="stat-grid stat-grid-sm"></div>
+
+        <div class="table-wrap">
+          <table class="table" id="reportTable">
+            <thead id="reportTableHead"></thead>
+            <tbody id="reportTableBody"></tbody>
+          </table>
+          <div class="empty-state" id="reportEmpty" hidden>
+            <svg viewBox="0 0 24 24"><path d="M5 3h14a1 1 0 0 1 1 1v16l-4-3-3 3-3-3-3 3-3-3-1 .8V4a1 1 0 0 1 1-1z"/></svg>
+            <p>No data for this selection</p>
+            <span>Try a different report type or date range</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== MODALS ===================== -->
+<div class="modal-backdrop" id="modalBackdrop">
+
+  <div class="modal" id="itemModal">
+    <div class="modal-head">
+      <h3 id="itemModalTitle">Add Item</h3>
+      <button class="icon-btn" data-close-modal>&times;</button>
+    </div>
+    <form id="itemForm" class="modal-body" novalidate>
+      <input type="hidden" id="itemEditId">
+      <div class="form-grid">
+        <div class="field">
+          <label for="fItemId">Item ID</label>
+          <input type="text" id="fItemId" placeholder="e.g. ITM011">
+          <span class="field-error" data-for="fItemId"></span>
+        </div>
+        <div class="field">
+          <label for="fName">Item name</label>
+          <input type="text" id="fName">
+          <span class="field-error" data-for="fName"></span>
+        </div>
+        <div class="field">
+          <label for="fSku">SKU</label>
+          <input type="text" id="fSku" placeholder="e.g. SKU-1042">
+          <span class="field-error" data-for="fSku"></span>
+        </div>
+        <div class="field">
+          <label for="fCategory">Category</label>
+          <input type="text" id="fCategory" list="categoryList" placeholder="e.g. Stationery">
+          <datalist id="categoryList"></datalist>
+          <span class="field-error" data-for="fCategory"></span>
+        </div>
+        <div class="field">
+          <label for="fUnit">Unit</label>
+          <select id="fUnit">
+            <option>pcs</option>
+            <option>box</option>
+            <option>kg</option>
+            <option>litre</option>
+            <option>pack</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fQty">Opening quantity</label>
+          <input type="number" id="fQty" min="0">
+          <span class="field-error" data-for="fQty"></span>
+        </div>
+        <div class="field">
+          <label for="fReorder">Reorder level</label>
+          <input type="number" id="fReorder" min="0">
+          <span class="field-error" data-for="fReorder"></span>
+        </div>
+        <div class="field">
+          <label for="fPrice">Unit price (₹)</label>
+          <input type="number" id="fPrice" min="0" step="0.01">
+          <span class="field-error" data-for="fPrice"></span>
+        </div>
+        <div class="field">
+          <label for="fSupplier">Default supplier (optional)</label>
+          <input type="text" id="fSupplier">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save Item</button>
+        <button type="button" class="btn btn-ghost" data-close-modal>Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="modal modal-sm" id="detailsModal">
+    <div class="modal-head">
+      <h3 id="detailsModalTitle">Details</h3>
+      <button class="icon-btn" data-close-modal>&times;</button>
+    </div>
+    <div class="modal-body" id="detailsModalBody"></div>
+  </div>
+
+  <div class="modal modal-sm" id="confirmModal">
+    <div class="modal-head">
+      <h3 id="confirmModalTitle">Are you sure?</h3>
+      <button class="icon-btn" data-close-modal>&times;</button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmModalText" class="confirm-text"></p>
+      <div class="form-actions">
+        <button class="btn btn-danger" id="confirmModalOk">Confirm</button>
+        <button class="btn btn-ghost" data-close-modal>Cancel</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== TOASTS ===================== -->
+<div class="toast-stack" id="toastStack"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
