@@ -24,7 +24,7 @@
   }
   function writeLS(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
 
-  const API = "http://localhost:5000/api";
+  const API = "https://inventory-management-system-1aib.onrender.com/api";
 
 const Store = {
   items: [],
